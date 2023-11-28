@@ -27,27 +27,22 @@ def fetch_weather():
         # Parse the page content
         soup = BeautifulSoup(page.content, 'html.parser')
         
-        # Inside the fetch_weather function, when displaying text:
-        print(soup.prettify().encode('utf-8').decode('utf-8', 'ignore'))
+        # Find the temperature element by attribute
+        temperature_element = soup.find('span', {'data-c': True, 'data-f': True})
 
-        # Find the temperature element by ID
-        temperature_element = soup.find('span', id='wob_tm')
+        # Extract only the numeric value from the temperature element
+        temperature = temperature_element.find('span', {'jsname': 'wcyxJ'}).text if temperature_element else "N/A"
 
-        # Find the wind speed element by ID
-        wind_speed_element = soup.find("span", id="wob_ws")
+        # Find the precipitation element
+        precipitation_parent_div = soup.find('div', class_='mPUmSe')
+        precipitation_elements = precipitation_parent_div.find_all('span', {'aria-hidden': 'true'})
 
-        # Find the precipitation element by ID
-        precipitation_element = soup.find("span", id="wob_pp")
+        # Check if the second span exists and get its text
+        precipitation = precipitation_elements[1].text if len(precipitation_elements) > 1 else "N/A"
 
-        # Check if the elements exist
-        if temperature_element and wind_speed_element and precipitation_element:
-            temperature = temperature_element.text
-            wind_speed = wind_speed_element.text
-            precipitation = precipitation_element.text
-        else:
-            temperature = "N/A"
-            wind_speed = "N/A"
-            precipitation = "N/A"
+        # Find the wind speed element by attribute
+        wind_speed_element = soup.find('div', {'data-c': True, 'data-f': True, 'jsaction': 'rcuQ6b:npT2md', 'jscontroller': 'ZWq8q'})
+        wind_speed = wind_speed_element.text if wind_speed_element else "N/A"
 
         # Display the weather data in the GUI
         result_text.config(state="normal")
@@ -66,15 +61,76 @@ def fetch_weather():
 root = tk.Tk()
 root.title("WeatherScrapy")
 root.geometry("600x400")
+root.configure(bg="#E0E3E2")
+
+# Load and display an image
+image_path = "weather.png"  # Change this to the actual path of your image file
+try:
+    original_image = tk.PhotoImage(file=image_path)
+
+    # Calculate the new width and height for resizing to 20%
+    new_width = int(original_image.width() * 0.2)
+    new_height = int(original_image.height() * 0.2)
+
+    # Resize the image
+    resized_image = original_image.subsample(5, 5)  # Adjust the values to achieve 20% size
+
+    weather_image_label = tk.Label(root, image=resized_image, background="#E0E3E2")
+    weather_image_label.grid(row=0, column=0, pady=10 )
+except tk.TclError:
+    print("Image file not found or not in a supported format!")
+
+
+# Add a heading at the top
+heading_label = ttk.Label(root, text="Weather Data Web Scraper", font=("Arial", 16, "bold"), background="#E0E3E2")
+heading_label.grid(row=0, column=1,columnspan=2, pady=10)
+
+
 
 # Create and configure the state and city dropdown menus
-states = ["Assam", "Arunachal Pradesh", "Andhra Pradesh", "Agra", "Ahmedabad", "Amritsar", "Bengaluru", "Bhopal", "Bhubaneswar", "Chandigarh", "Chennai", "Coimbatore", "Dehradun", "Delhi", "Faridabad", "Gandhinagar", "Ghaziabad", "Gurugram", "Guwahati", "Hyderabad", "Imphal", "Indore", "Itanagar", "Jaipur", "Kolkata", "Lucknow", "Mumbai", "Nagpur", "Noida", "Panaji", "Patna", "Pune", "Raipur", "Ranchi", "Shillong", "Shimla", "Srinagar", "Thiruvananthapuram"]
+states = [
+    "Andaman and Nicobar Islands",
+    "Andhra Pradesh",
+    "Arunachal Pradesh",
+    "Assam",
+    "Bihar",
+    "Chandigarh",
+    "Chhattisgarh",
+    "Dadra and Nagar Haveli and Daman and Diu",
+    "Delhi",
+    "Goa",
+    "Gujarat",
+    "Haryana",
+    "Himachal Pradesh",
+    "Jharkhand",
+    "Karnataka",
+    "Kerala",
+    "Ladakh",
+    "Lakshadweep",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "Manipur",
+    "Meghalaya",
+    "Mizoram",
+    "Nagaland",
+    "Odisha",
+    "Puducherry",
+    "Punjab",
+    "Rajasthan",
+    "Sikkim",
+    "Tamil Nadu",
+    "Telangana",
+    "Tripura",
+    "Uttar Pradesh",
+    "Uttarakhand",
+    "West Bengal",
+]
 state_var = tk.StringVar()
 state_var.set(states[0])
-state_label = ttk.Label(root, text="Select State:")
-state_label.grid(row=0, column=0)
+state_label = ttk.Label(root, text="Select State:", background="#E0E3E2")
+state_label.grid(row=2, column=0, pady=(0, 5))
 state_menu = ttk.Combobox(root, textvariable=state_var, values=states)
-state_menu.grid(row=0, column=1)
+state_menu.grid(row=2, column=1, pady=(0, 5))
 
 # A dictionary of cities for each state
 cities = {
@@ -82,18 +138,49 @@ cities = {
     "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Tirupati"],
     "Arunachal Pradesh": ["Itanagar", "Tawang", "Naharlagun"],
     "Assam": ["Guwahati", "Silchar", "Dibrugarh"],
-    # ... (other states and cities)
+    "Bihar": ["Patna", "Gaya", "Bhagalpur"],
+    "Chandigarh": ["Chandigarh"],
+    "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur"],
+    "Dadra and Nagar Haveli and Daman and Diu": ["Daman", "Diu", "Dadra"],
+    "Delhi": ["New Delhi", "Gurgaon", "Noida"],
+    "Goa": ["Panaji", "Vasco da Gama", "Margao"],
+    "Gujarat": ["Ahmedabad", "Surat", "Vadodara"],
+    "Haryana": ["Chandigarh", "Faridabad", "Gurgaon"],
+    "Himachal Pradesh": ["Shimla", "Manali", "Dharamshala"],
+    "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad"],
+    "Karnataka": ["Bengaluru", "Mysuru", "Hubli"],
+    "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode"],
+    "Ladakh": ["Leh", "Kargil"],
+    "Lakshadweep": ["Kavaratti", "Agatti", "Andrott"],
+    "Madhya Pradesh": ["Bhopal", "Indore", "Jabalpur"],
+    "Maharashtra": ["Mumbai", "Pune", "Nagpur"],
+    "Manipur": ["Imphal", "Thoubal", "Bishnupur"],
+    "Meghalaya": ["Shillong", "Tura", "Jowai"],
+    "Mizoram": ["Aizawl", "Lunglei", "Saiha"],
+    "Nagaland": ["Kohima", "Dimapur", "Mokokchung"],
+    "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela"],
+    "Puducherry": ["Puducherry", "Karaikal", "Yanam"],
+    "Punjab": ["Chandigarh", "Ludhiana", "Amritsar"],
+    "Rajasthan": ["Jaipur", "Udaipur", "Jodhpur"],
+    "Sikkim": ["Gangtok", "Namchi", "Mangan"],
+    "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai"],
+    "Telangana": ["Hyderabad", "Warangal", "Nizamabad"],
+    "Tripura": ["Agartala", "Udaipur", "Dharmanagar"],
+    "Uttar Pradesh": ["Lucknow", "Kanpur", "Agra"],
+    "Uttarakhand": ["Dehradun", "Haridwar", "Rishikesh"],
+    "West Bengal": ["Kolkata", "Howrah", "Durgapur"],
 }
+
 
 # Initialize the city variable with the first city of the selected state
 initial_state = states[0]
 cities_for_state = cities.get(initial_state, [])
 city_var = tk.StringVar()
 city_var.set(cities_for_state[0] if cities_for_state else "")
-city_label = ttk.Label(root, text="Select City:")
-city_label.grid(row=1, column=0)
+city_label = ttk.Label(root, text="Select City:" , background="#E0E3E2")
+city_label.grid(row=3, column=0, pady=(0, 5))
 city_menu = ttk.Combobox(root, textvariable=city_var, values=cities_for_state)
-city_menu.grid(row=1, column=1)
+city_menu.grid(row=3, column=1, pady=(0, 5))
 
 # Function to update the city dropdown based on the selected state
 def update_city_dropdown(event):
@@ -108,18 +195,22 @@ state_menu.bind("<<ComboboxSelected>>", update_city_dropdown)
 # Create a button to fetch weather data
 fetch_button = ttk.Button(root, text="Fetch Weather", command=fetch_weather,
                           style="Custom.TButton")
-fetch_button.grid(row=2, columnspan=2)
+fetch_button.grid(row=4, columnspan=2, pady=10, padx=10)
+
 
 # Create a custom button style
 button_style = ttk.Style()
-button_style.configure("Custom.TButton", font=("Arial", 10, "bold"),
-                       background="blue",
-                       borderwidth=2,
-                       padding=7)
+button_style.configure("Custom.TButton", font=("Arial", 11),
+                       border_width=0,
+                       corner_radius=8,
+                       padding=5)
+
+
 
 # Create a text widget to display the weather data
-result_text = tk.Text(root, height=15, width=70, font=("Arial", 10), state="disabled")
-result_text.grid(row=3, columnspan=2, padx=10, pady=10)
+result_text = tk.Text(root, height=8, width=53, font=("Arial", 15), state="disabled")
+result_text.grid(row=5, columnspan=2, padx=5, pady=10, sticky="nsew")
 
 # Start the GUI application
 root.mainloop()
+
