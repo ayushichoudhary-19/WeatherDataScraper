@@ -3,11 +3,10 @@ import requests
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
-import re
 
 # Function to fetch weather data for the selected city and display it in a GUI window
 def fetch_weather():
-    # Get the selected state and city from the dropdown menus
+    # Get the selected state and city from the dropdown menus 
     selected_state = state_var.get()
     selected_city = city_var.get()
 
