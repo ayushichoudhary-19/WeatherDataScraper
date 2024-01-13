@@ -2,6 +2,9 @@
 
 **WeatherScrapy** is a Python application that allows you to fetch and display weather data for selected cities in India. It uses web scraping to obtain weather information from Google search results, providing users with up-to-date weather details for their chosen location.
 
+## Live Demo ▶️
+https://youtu.be/uDze59XidRM
+
 ## Features 🌟
 
 - User-friendly GUI built with **Tkinter**.
