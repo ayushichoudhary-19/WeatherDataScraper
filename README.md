@@ -35,7 +35,7 @@ git clone https://github.com/yourusername/WeatherScrapy.git
 2. Run the application:
 
 ```bash
-python WeatherScrapy.py
+python forecastmain.py
 ```
 
 3. Select a state and city, then click the "Fetch Weather" button.
