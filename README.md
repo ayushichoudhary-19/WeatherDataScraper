@@ -12,8 +12,7 @@ Welcome to WeatherScrapy!
 - **Google Search**: Utilized for fetching weather data through web scraping.
   
 # 🍿 Video
-
-[![WeatherDataScraper](https://img.youtube.com/vi/uDze59XidRM/maxresdefault.jpg)](https://www.youtube.com/watch?v=uDze59XidRM)
+https://www.youtube.com/watch?v=uDze59XidRM
 
 # 🦄 Features
 
