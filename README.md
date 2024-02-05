@@ -11,8 +11,19 @@ Welcome to WeatherScrapy!
 - **Requests**: A library for making HTTP requests.
 - **Google Search**: Utilized for fetching weather data through web scraping.
   
-# 🍿 Video
-https://www.youtube.com/watch?v=uDze59XidRM
+# 🍿 Video/ScreenShots
+**Demo Vide:** 
+
+https://youtu.be/XEbkFBOKuEM
+
+
+<br>
+
+**Screenshots:**   
+![image](https://github.com/ayushichoudhary-19/WeatherDataScraper/assets/73214455/c9166fe5-d865-4a1f-b8b2-f18cf8f9b157)
+
+
+
 
 # 🦄 Features
 
